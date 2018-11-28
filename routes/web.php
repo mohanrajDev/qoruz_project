@@ -11,6 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/home', 301);
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::post('test-store', 'HomeController@testStore')->name('test.store');
+Route::get('test-timeout', 'HomeController@testTimeout')->name('test.timeout');
+Route::get('test-pdf', 'HomeController@testPdf')->name('test.pdf');

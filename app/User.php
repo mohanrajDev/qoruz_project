@@ -2,6 +2,10 @@
 
 namespace App;
 
+use App\UserTest;
+use App\Question;
+use Carbon\Carbon;
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -16,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'phone'
     ];
 
     /**
@@ -27,4 +31,40 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    
+    /**
+     * Create user's test with questions.
+     *
+     * @return void
+     */    
+    public function createTest()
+    {
+        $test = new UserTest;
+        $test->user_id = $this->id;
+        $test->started_at = Carbon::now();
+        $test->ended_at = Carbon::now()->addSeconds(60);
+        $test->save();
+        $questions = Question::get()->random(5);
+        $test->questions()->saveMany($questions);
+
+        return $this;
+    }
+
+    /**
+     * Get the user that owns the test.
+     */  
+    public function test()
+    {
+        return $this->hasOne('App\UserTest');
+    }
+
+
+     /**
+     * Get the user test status.
+     */  
+    public function isTestCreated()
+    {
+        return $this->test ? true : false;
+    }
 }
